@@ -1,0 +1,20 @@
+parameters:
+  buildConfiguration: ''
+  hasUnitTests: ''
+  apps: []
+
+steps:
+- template: netcore-build-test-solution.yml
+  parameters:
+    buildConfiguration: ${{ parameters.buildConfiguration }}
+    hasUnitTests: ${{ parameters.hasUnitTests }}
+
+- ${{ each app in parameters.apps }}:
+  - template: netcore-publish-app.yml
+    parameters:
+      appName: ${{ app.appName }}
+      buildConfiguration: ${{ parameters.buildConfiguration }}
+      artifactFolder: ${{ app.artifactFolder }}
+
+- task: PublishBuildArtifacts@1
+  displayName: Publishing artifacts

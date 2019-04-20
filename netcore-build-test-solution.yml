@@ -1,0 +1,18 @@
+parameters:
+  buildConfiguration: 'Release'
+  hasUnitTests: 'false'
+
+steps:
+- script: dotnet restore
+  displayName: Restoring .Net packages
+
+- script: dotnet build --configuration ${{ parameters.buildConfiguration }}
+  displayName: Building .Net code
+
+- ${{ if eq(parameters.hasUnitTests, 'true') }}:
+  - task: DotNetCoreCLI@2
+    displayName: Running unit tests
+    inputs:
+      command: test
+      projects: '**/*Tests/*.csproj'
+      arguments: '--configuration ${{ parameters.buildConfiguration }}'

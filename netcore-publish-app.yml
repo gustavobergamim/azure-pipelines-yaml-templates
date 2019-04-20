@@ -1,0 +1,17 @@
+parameters:
+  appName: ''
+  buildConfiguration: 'Release'
+  artifactFolder: 'app'
+
+steps:
+- script: dotnet publish ${{ parameters.appName }} --configuration ${{ parameters.buildConfiguration }} --output publish/${{ parameters.artifactFolder }}
+  displayName: Packing application ${{ parameters.appName }}
+
+- task: CopyFiles@2
+  displayName: Copy packed application ${{ parameters.appName }} to output
+  inputs:
+    contents: |
+      ${{ parameters.appName }}/publish/${{ parameters.artifactFolder }}/**
+      !**/appsettings.Development.json
+    targetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.artifactFolder }}'
+    flattenFolders: true
